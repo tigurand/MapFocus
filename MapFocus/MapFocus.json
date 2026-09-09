@@ -1,0 +1,13 @@
+{
+  "Author": "Lucille",
+  "Name": "MapFocus",
+  "Punchline": "Make map less annoying.",
+  "Description": "Map QoL for FFXIV.",
+  "InternalName": "MapFocus",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "qol"
+  ],
+  "RepoUrl": "https://github.com/tigurand/MapFocus",
+  "IconUrl": "https://raw.githubusercontent.com/tigurand/MapFocus/refs/heads/main/image/icon.png"
+}
