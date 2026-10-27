@@ -24,6 +24,7 @@ public sealed unsafe class MapBehaviorService : IDisposable
     private bool hasSavedView;
 
     private bool manualCenterPending;
+    private bool playerCenterPending;
     private bool pendingSet;
     private float pendingX;
     private float pendingY;
@@ -62,6 +63,8 @@ public sealed unsafe class MapBehaviorService : IDisposable
 
     public void CenterMapNow() => manualCenterPending = true;
 
+    public void CenterOnPlayerNow() => playerCenterPending = true;
+
     public void OnCommand(string args)
     {
         var a = args.Trim();
@@ -88,6 +91,7 @@ public sealed unsafe class MapBehaviorService : IDisposable
         {
             wasVisible = false;
             manualCenterPending = false;
+            playerCenterPending = false;
             pendingSet = false;
             pendingAttempts = 0;
             return;
@@ -118,9 +122,19 @@ public sealed unsafe class MapBehaviorService : IDisposable
         wasVisible = visible;
 
         if (!visible)
+        {
+            playerCenterPending = false;
             return;
+        }
 
         var map = (AddonAreaMap*)addon.Address;
+
+        if (playerCenterPending)
+        {
+            playerCenterPending = false;
+            CenterOnPlayerOnce(map);
+        }
+
         ref var area = ref map->AreaMap;
 
         if (cfg.StopRecenterOnPlayer || cfg.CenterMapOnOpen || manualCenterPending || pendingSet)
@@ -195,6 +209,23 @@ public sealed unsafe class MapBehaviorService : IDisposable
         var followCheckbox = map->FollowPlayerCheckbox;
         if (followCheckbox != null && followCheckbox->IsChecked)
             followCheckbox->SetChecked(false);
+    }
+
+    private void CenterOnPlayerOnce(AddonAreaMap* map)
+    {
+        if (map == null || centerOnPlayerHook is null)
+            return;
+
+        pendingSet = false;
+        pendingAttempts = 0;
+
+        var followCheckbox = map->FollowPlayerCheckbox;
+        var wasFollowing = followCheckbox != null && followCheckbox->IsChecked;
+
+        centerOnPlayerHook.Original(&map->AreaMap);
+
+        if (!wasFollowing)
+            UncheckFollowPlayer(map);
     }
 
     private void ApplyPending(AddonAreaMap* map)

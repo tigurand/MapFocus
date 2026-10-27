@@ -23,6 +23,7 @@ public sealed class Plugin : IDalamudPlugin
     public readonly WindowSystem WindowSystem = new("MapFocus");
     private readonly ConfigWindow configWindow;
     private readonly MapBehaviorService mapBehavior;
+    private readonly MapCenterButtonOverlay mapCenterButton;
 
     public Plugin()
     {
@@ -31,6 +32,8 @@ public sealed class Plugin : IDalamudPlugin
         WindowSystem.AddWindow(configWindow);
         mapBehavior = new MapBehaviorService(this);
         mapBehavior.Enable();
+        mapCenterButton = new MapCenterButtonOverlay(this);
+        mapCenterButton.Enable();
 
         CommandManager.AddHandler(CommandName, new CommandInfo((_, args) => mapBehavior.OnCommand(args ?? string.Empty))
         {
@@ -44,6 +47,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void Dispose()
     {
+        mapCenterButton.Dispose();
         mapBehavior.Dispose();
         CommandManager.RemoveHandler(CommandName);
         WindowSystem.RemoveAllWindows();
@@ -53,4 +57,6 @@ public sealed class Plugin : IDalamudPlugin
     public void ToggleConfigUi() => configWindow.Toggle();
 
     public void CenterMapNow() => mapBehavior.CenterMapNow();
+
+    public void CenterOnPlayerNow() => mapBehavior.CenterOnPlayerNow();
 }

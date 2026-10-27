@@ -92,6 +92,68 @@ public sealed class ConfigWindow : Window, IDisposable
         ImGui.Separator();
         ImGui.Spacing();
 
+        SectionHeader("Map button");
+
+        var showMapButton = cfg.ShowMapCenterButton;
+        if (ImGui.Checkbox("Show center buttons on the map", ref showMapButton))
+        {
+            cfg.ShowMapCenterButton = showMapButton;
+            changed = true;
+        }
+        Hint("Adds two round buttons to the bottom-right corner of the map window: "
+             + "center on player and center the map. Their layout is configured below.");
+
+        if (showMapButton)
+        {
+            ImGui.Spacing();
+
+            var vertical = cfg.MapButtonsVertical;
+            if (ImGui.RadioButton("Horizontal", !vertical))
+            {
+                cfg.MapButtonsVertical = false;
+                changed = true;
+            }
+            ImGui.SameLine();
+            if (ImGui.RadioButton("Vertical", vertical))
+            {
+                cfg.MapButtonsVertical = true;
+                changed = true;
+            }
+
+            var spacingValue = cfg.MapButtonsSpacing;
+            ImGui.SetNextItemWidth(160f);
+            if (ImGui.DragInt("Button spacing (px)", ref spacingValue, 1f, 0, 100))
+                cfg.MapButtonsSpacing = spacingValue;
+            if (ImGui.IsItemDeactivatedAfterEdit())
+                changed = true;
+
+            var offsetX = cfg.MapCenterButtonOffsetX;
+            ImGui.SetNextItemWidth(160f);
+            if (ImGui.DragInt("Horizontal offset (px)", ref offsetX, 1f, -2000, 2000))
+                cfg.MapCenterButtonOffsetX = offsetX;
+            if (ImGui.IsItemDeactivatedAfterEdit())
+                changed = true;
+
+            var offsetY = cfg.MapCenterButtonOffsetY;
+            ImGui.SetNextItemWidth(160f);
+            if (ImGui.DragInt("Vertical offset (px)", ref offsetY, 1f, -2000, 2000))
+                cfg.MapCenterButtonOffsetY = offsetY;
+            if (ImGui.IsItemDeactivatedAfterEdit())
+                changed = true;
+
+            if (ImGui.Button("Reset button position"))
+            {
+                cfg.MapCenterButtonOffsetX = 0;
+                cfg.MapCenterButtonOffsetY = 0;
+                changed = true;
+            }
+            Hint("Puts both buttons back in their default bottom-right corner.");
+        }
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.Spacing();
+
         SectionHeader("Settings window");
 
         var movable = cfg.IsConfigWindowMovable;

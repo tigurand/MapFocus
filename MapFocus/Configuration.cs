@@ -13,5 +13,11 @@ public class Configuration : IPluginConfiguration
     public bool StopRecenterOnPlayer { get; set; } = true;
     public bool CenterMapOnOpen { get; set; } = false;
 
+    public bool ShowMapCenterButton { get; set; } = true;
+    public bool MapButtonsVertical { get; set; } = false;
+    public int MapButtonsSpacing { get; set; } = 4;
+    public int MapCenterButtonOffsetX { get; set; } = 0;
+    public int MapCenterButtonOffsetY { get; set; } = 0;
+
     public void Save() => Plugin.PluginInterface.SavePluginConfig(this);
 }
